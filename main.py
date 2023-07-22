@@ -4,6 +4,7 @@ import config
 import pymysql
 import jwt
 import datetime
+
 app = FastAPI()
 
 # MySQL database configuration
@@ -17,15 +18,18 @@ config = {
 
 }
 
+
 @app.on_event("startup")
 async def startup():
     # Create a database connection pool on startup
     app.db_connection = pymysql.connect(**config, autocommit=True)
 
+
 @app.on_event("shutdown")
 async def shutdown():
     # Close the database connection pool on shutdown
     app.db_connection.close()
+
 
 # authentication
 @app.post('/login/')
@@ -33,19 +37,20 @@ def login(password: str):
     try:
         with app.db_connection.cursor() as cursor:
             # Execute a SQL query
-            sql = "SELECT * FROM user WHERE  password='"+str(password)+"'"
+            sql = "SELECT * FROM user WHERE  password='" + str(password) + "'"
             cursor.execute(sql)
 
             # Fetch all the rows
             result = cursor.fetchall()
             print(result)
         if result:
-            return {"status":"success!",}
+            return {"status": "success!", }
         else:
             return {"status", "error!"}
     except Exception as e:
         print(e)
         return {"error": str(e)}
+
 
 @app.delete('/logout/')
 def login(password: str):
@@ -63,48 +68,52 @@ def login(password: str):
     except Exception as e:
         print(e)
         return {"error": str(e)}
+
+
 # end auth
 
 # start kirim
 @app.post('/kirim/yangi/')
-def login(izoh: str, summa:str):
+def login(izoh: str, summa: str):
     try:
         with app.db_connection.cursor() as cursor:
             # Execute a SQL query
-            sql = "INSERT INTO kirim (narx, izoh, sana, vaqt) VALUES ('"+str(summa)+"', '"+str(izoh)+"', DATE(NOW()), TIME(NOW()) )"
+            sql = "INSERT INTO kirim (narx, izoh, sana, vaqt) VALUES ('" + str(summa) + "', '" + str(
+                izoh) + "', DATE(NOW()), TIME(NOW()) )"
             cursor.execute(sql)
 
             app.db_connection.commit()
-            return {"status":"success!",}
+            return {"status": "success!", }
     except Exception as e:
         print(e)
         return {"error": str(e)}
 
 
 @app.post('/kirim/tahrirlash/')
-def login(izoh: str, summa:str, id:int):
+def login(izoh: str, summa: str, id: int):
     try:
         with app.db_connection.cursor() as cursor:
             # Execute a SQL query
-            sql = "UPDATE kirim SET narx='"+str(summa)+"', izoh='"+str(izoh)+"' WHERE id='"+str(id)+"'"
+            sql = "UPDATE kirim SET narx='" + str(summa) + "', izoh='" + str(izoh) + "' WHERE id='" + str(id) + "'"
             cursor.execute(sql)
 
             app.db_connection.commit()
-            return {"status":"success!",}
+            return {"status": "success!", }
     except Exception as e:
         print(e)
         return {"error": str(e)}
 
+
 @app.delete('/kirim/ochirish/')
-def login(id:int):
+def login(id: int):
     try:
         with app.db_connection.cursor() as cursor:
             # Execute a SQL query
-            sql = "DELETE FROM kirim WHERE id='"+str(id)+"'"
+            sql = "DELETE FROM kirim WHERE id='" + str(id) + "'"
             cursor.execute(sql)
 
             app.db_connection.commit()
-            return {"status":"success!"}
+            return {"status": "success!"}
     except Exception as e:
         print(e)
         return {"error": str(e)}
@@ -112,44 +121,46 @@ def login(id:int):
 
 # start chiqim
 @app.post('/chiqim/yangi/')
-def login(izoh: str, summa:str):
+def login(izoh: str, summa: str):
     try:
         with app.db_connection.cursor() as cursor:
             # Execute a SQL query
-            sql = "INSERT INTO chiqim (narx, izoh, sana, vaqt) VALUES ('"+str(summa)+"', '"+str(izoh)+"', DATE(NOW()), TIME(NOW()) )"
+            sql = "INSERT INTO chiqim (narx, izoh, sana, vaqt) VALUES ('" + str(summa) + "', '" + str(
+                izoh) + "', DATE(NOW()), TIME(NOW()) )"
             cursor.execute(sql)
 
             app.db_connection.commit()
-            return {"status":"success!",}
+            return {"status": "success!", }
     except Exception as e:
         print(e)
         return {"error": str(e)}
 
 
 @app.post('/chiqim/tahrirlash/')
-def login(izoh: str, summa:str, id:int):
+def login(izoh: str, summa: str, id: int):
     try:
         with app.db_connection.cursor() as cursor:
             # Execute a SQL query
-            sql = "UPDATE chiqim SET narx='"+str(summa)+"', izoh='"+str(izoh)+"' WHERE id='"+str(id)+"'"
+            sql = "UPDATE chiqim SET narx='" + str(summa) + "', izoh='" + str(izoh) + "' WHERE id='" + str(id) + "'"
             cursor.execute(sql)
 
             app.db_connection.commit()
-            return {"status":"success!",}
+            return {"status": "success!", }
     except Exception as e:
         print(e)
         return {"error": str(e)}
 
+
 @app.delete('/chiqim/ochirish/')
-def login(id:int):
+def login(id: int):
     try:
         with app.db_connection.cursor() as cursor:
             # Execute a SQL query
-            sql = "DELETE FROM chiqim WHERE id='"+str(id)+"'"
+            sql = "DELETE FROM chiqim WHERE id='" + str(id) + "'"
             cursor.execute(sql)
 
             app.db_connection.commit()
-            return {"status":"success!"}
+            return {"status": "success!"}
     except Exception as e:
         print(e)
         return {"error": str(e)}
@@ -157,7 +168,7 @@ def login(id:int):
 
 # kirim hisobot
 @app.get('/hisobot')
-def login(sana1:str, sana2:str):
+def login(sana1: str, sana2: str):
     try:
         with app.db_connection.cursor() as cursor:
             # Execute a SQL query
@@ -169,6 +180,37 @@ def login(sana1:str, sana2:str):
     except Exception as e:
         print(e)
         return {"error": str(e)}
+
+
+# kirim hisobot
+@app.get('/kirim')
+def login():
+    try:
+        with app.db_connection.cursor() as cursor:
+            # Execute a SQL query
+            sql = "SELECT * FROM kirim"
+            cursor.execute(sql)
+            result = cursor.fetchall()
+            return {"status": "success!", "data": result}
+    except Exception as e:
+        print(e)
+        return {"error": str(e)}
+
+
+# chiqim hisobot
+@app.get('/chiqim')
+def login():
+    try:
+        with app.db_connection.cursor() as cursor:
+            # Execute a SQL query
+            sql = "SELECT * FROM chiqim"
+            cursor.execute(sql)
+            result = cursor.fetchall()
+            return {"status": "success!", "data": result}
+    except Exception as e:
+        print(e)
+        return {"error": str(e)}
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)
